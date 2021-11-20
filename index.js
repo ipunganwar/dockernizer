@@ -1,6 +1,21 @@
 'use strict';
 
 const express = require('express');
+const mongoose = require('mongoose');
+const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_PORT } = require('./config/config');
+
+const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
+
+const connectWithRetry = () => {
+  mongoose.connect(mongoUrl)
+    .then(_ => console.log('succesfully connected to database'))
+    .catch(e => {
+      console.log(e)
+      setTimeout(connectWithRetry, 5000)
+    })
+}
+
+connectWithRetry()
 
 // Constants
 const PORT = 3000;
